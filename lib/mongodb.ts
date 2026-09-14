@@ -8,6 +8,8 @@ interface MongooseCache {
 function getMongoDbUri(): string {
   const mongodbUri = process.env.MONGODB_URI;
 
+    console.log("MongoDB URI loaded:", !!mongodbUri);
+
   if (!mongodbUri) {
     throw new Error("Please define the MONGODB_URI environment variable.");
   }

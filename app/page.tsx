@@ -1,8 +1,16 @@
 import Explorebtn from "@/components/Explorebtn";
 import EventCard from "@/components/EventCard";
-import { events } from "@/lib/constants";
+import { IEvent } from "@/database/event.model";
+import { cacheLife } from "next/cache";
 
-const Page = () => {
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const Page = async () => {
+  "use cache";
+  cacheLife("hours");
+  const response = await fetch(`${BASE_URL}/api/events`);
+  const data = await response.json();
+  const events: IEvent[] = Array.isArray(data.events) ? data.events : [];
   return (
     <section id="home">
       <h1 className="text-center">
@@ -14,13 +22,17 @@ const Page = () => {
       <Explorebtn />
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
-        <ul className="events">
-          {events.map((evt) => (
-            <li key={evt.title}>
-              <EventCard {...evt} />
-            </li>
-          ))}
-        </ul>
+        {events.length > 0 ? (
+          <ul className="events">
+            {events.map((evt) => (
+              <li key={evt.title}>
+                <EventCard {...evt} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No events available right now.</p>
+        )}
       </div>
     </section>
   );
