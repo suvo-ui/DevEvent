@@ -9,6 +9,10 @@ const Page = async () => {
   "use cache";
   cacheLife("hours");
   const response = await fetch(`${BASE_URL}/api/events`);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Events API failed: ${response.status} ${errorText}`);
+  }
   const data = await response.json();
   const events: IEvent[] = Array.isArray(data.events) ? data.events : [];
   return (
