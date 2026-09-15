@@ -1,4 +1,4 @@
-import { Event, type IEvent } from "@/database/event.model";
+import { Event } from "@/database/event.model";
 import { connectToDatabase } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,9 +38,7 @@ export async function GET(
 
     await connectToDatabase();
 
-    const event: IEvent | null = await Event.findOne({ slug: normalizedSlug })
-      .lean<IEvent>()
-      .exec();
+    const event = await Event.findOne({ slug: normalizedSlug }).lean().exec();
 
     if (!event) {
       return NextResponse.json(
@@ -52,7 +50,7 @@ export async function GET(
     return NextResponse.json(
       {
         message: "Event fetched successfully.",
-        event,
+        event: { ...event, _id: event._id.toString() },
       },
       { status: 200 },
     );

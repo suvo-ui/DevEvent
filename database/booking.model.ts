@@ -4,6 +4,7 @@ import { Event } from "./event.model";
 
 export interface IBooking {
   eventId: Types.ObjectId;
+  slug: string;
   email: string;
   createdAt: Date;
   updatedAt: Date;
@@ -16,7 +17,13 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const bookingSchema = new Schema<IBooking, BookingModel>(
   {
     // An ObjectId reference keeps booking documents small while preserving relations.
-    eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true, index: true },
+    eventId: {
+      type: Schema.Types.ObjectId,
+      ref: "Event",
+      required: true,
+      index: true,
+    },
+    slug: { type: String, required: true, trim: true },
     email: {
       type: String,
       required: true,
@@ -37,7 +44,9 @@ bookingSchema.pre("save", async function () {
     const eventExists = await Event.exists({ _id: this.eventId });
 
     if (!eventExists) {
-      throw new Error("Cannot create a booking for an event that does not exist.");
+      throw new Error(
+        "Cannot create a booking for an event that does not exist.",
+      );
     }
   }
 });

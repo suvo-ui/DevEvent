@@ -5,6 +5,8 @@ import BookEvent from "@/components/BookEvent";
 import { getSimilarEventBySLug } from "@/lib/actions/event.action";
 import EventCard from "@/components/EventCard";
 
+export const instant = false;
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 interface EventDetailItem {
@@ -15,6 +17,7 @@ interface EventDetailItem {
 
 interface EventApiResponse {
   event?: {
+    _id?: string;
     description?: string;
     overview?: string;
     image?: string;
@@ -195,7 +198,7 @@ const EventDetails = async ({
               <p className="text-sm">Be the First one to book your spot</p>
             )}
 
-            <BookEvent />
+            <BookEvent eventId={String(event._id ?? slug)} slug={slug} />
           </div>
         </aside>
       </div>

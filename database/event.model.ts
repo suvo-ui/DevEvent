@@ -1,7 +1,7 @@
-import mongoose, { type Model, Schema } from "mongoose";
+import mongoose, { type Model, Schema, Types } from "mongoose";
 
 export interface IEvent {
-  id: string;
+  _id: Types.ObjectId;
   title: string;
   slug: string;
   description: string;
@@ -65,18 +65,27 @@ function normalizeTime(value: string): string {
   let hours = Number(hoursInput);
   const minutes = Number(minutesInput);
 
-  if (minutes > 59 || hours > (meridiem ? 12 : 23) || hours === 0 && meridiem) {
+  if (
+    minutes > 59 ||
+    hours > (meridiem ? 12 : 23) ||
+    (hours === 0 && meridiem)
+  ) {
     throw new Error("Event time must be a valid time.");
   }
 
   if (meridiem) {
-    hours = hours % 12 + (meridiem.toLowerCase() === "pm" ? 12 : 0);
+    hours = (hours % 12) + (meridiem.toLowerCase() === "pm" ? 12 : 0);
   }
 
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
-const requiredText = { type: String, required: true, trim: true, validate: isNonEmptyString };
+const requiredText = {
+  type: String,
+  required: true,
+  trim: true,
+  validate: isNonEmptyString,
+};
 const requiredTextList = {
   type: [{ type: String, required: true, trim: true }],
   required: true,
